@@ -213,6 +213,12 @@ The code comments are in Italian: the project was written while learning.
 
 SteamAll is not affiliated with Valve, Steam, GOG, Epic Games, Ubisoft or any store. Steam and the Steam logo are trademarks of Valve Corporation.
 
+## AI disclaimer
+
+SteamAll was built with the help of Claude, Anthropic's AI assistant. I designed the project and its rules (libraries read locally with no logins, each store opening its own app, nothing deleted for good) and made the decisions along the way. We built it piece by piece, under my review, with automated tests and checks on my own library and Steam setup at every step. I read every file to learn from it, which is why the code comments are in Italian.
+
+Contributions are held to the same standard, whoever writes them: tests, and proof in the pull request that it works.
+
 ## Contributing
 
 Pull requests are welcome, above all for the stores that are still missing ([TODO.md](TODO.md)). Every pull request needs passing tests and, in its description, proof that it works: see [CONTRIBUTING.md](CONTRIBUTING.md). Please contribute here rather than keeping a separate fork, so everyone gets the improvements.
