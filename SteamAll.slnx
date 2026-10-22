@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/SteamAll.App/SteamAll.App.csproj" />
+    <Project Path="src/SteamAll.Core/SteamAll.Core.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/SteamAll.Tests/SteamAll.Tests.csproj" />
+  </Folder>
+</Solution>

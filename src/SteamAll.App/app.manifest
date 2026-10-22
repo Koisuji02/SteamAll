@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  app.manifest
+  Un "manifest" è un file XML che il compilatore mette DENTRO l'exe. Windows lo legge prima
+  ancora di avviare il programma, per sapere come trattarlo. Su Linux non serve e viene ignorato.
+  (La scala dello schermo, 125%, 150%..., la gestisce Avalonia da sola: qui non serve dirlo.)
+-->
+<assembly manifestVersion="1.0" xmlns="urn:schemas-microsoft-com:asm.v1">
+
+  <!-- Nome e versione (obbligatori nel formato del manifest). -->
+  <assemblyIdentity version="1.0.0.0" name="SteamAll"/>
+
+  <!-- Privilegi: "asInvoker" = parte con gli stessi permessi di chi lo apre, quindi niente
+       richiesta di amministratore (UAC). Steam e i giochi dell'utente non ne hanno bisogno. -->
+  <trustInfo xmlns="urn:schemas-microsoft-com:asm.v2">
+    <security>
+      <requestedPrivileges xmlns="urn:schemas-microsoft-com:asm.v3">
+        <requestedExecutionLevel level="asInvoker" uiAccess="false"/>
+      </requestedPrivileges>
+    </security>
+  </trustInfo>
+
+  <!-- Compatibilità: il programma è fatto per Windows 10 e 11 (questo GUID li indica entrambi).
+       Senza, Windows gli fa credere di girare su Windows 8 e alcune funzioni non si comportano bene. -->
+  <compatibility xmlns="urn:schemas-microsoft-com:compatibility.v1">
+    <application>
+      <supportedOS Id="{8e0f7a12-bfb3-4fe8-b9a5-48fd50a15a9a}"/>
+    </application>
+  </compatibility>
+
+</assembly>

@@ -1,0 +1,39 @@
+<!--
+  SteamAll.Launcher.csproj
+  Il launcher dei giochi emulati, su .NET Framework 4.8: è già dentro Windows 10 e 11, quindi
+  il launcher pesa pochi KB e parte all'istante (un programma .NET 10 "self-contained" peserebbe
+  decine di MB per ogni gioco). SteamAll lo porta dentro di sé e lo copia nelle cartelle dei giochi.
+-->
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- Qui la versione di .NET è diversa da quella comune (Directory.Build.props): la sostituiamo. -->
+    <TargetFramework>net48</TargetFramework>
+    <!-- WinExe: niente finestra della console quando parte. -->
+    <OutputType>WinExe</OutputType>
+    <!-- Gli "using" impliciti di .NET Framework includono librerie che qui non servono: li scriviamo a mano. -->
+    <ImplicitUsings>disable</ImplicitUsings>
+    <!-- La versione più recente del linguaggio C# (anche se .NET Framework è vecchio: il compilatore è quello nuovo). -->
+    <LangVersion>latest</LangVersion>
+    <AssemblyName>SteamAll.Launcher</AssemblyName>
+    <RootNamespace>SteamAll.Launcher</RootNamespace>
+    <!-- Il "nome del prodotto" scritto nell'exe: è così che SteamAll riconosce i suoi launcher. -->
+    <Product>SteamAll Game Launcher</Product>
+    <AssemblyTitle>SteamAll Game Launcher</AssemblyTitle>
+    <Description>Starts an emulated game for Steam (made by SteamAll)</Description>
+    <!-- Nessun file .config accanto all'exe: deve bastare l'exe da solo. -->
+    <GenerateSupportedRuntime>false</GenerateSupportedRuntime>
+    <AutoGenerateBindingRedirects>false</AutoGenerateBindingRedirects>
+    <!-- Quando si pubblica SteamAll per "win-x64", il ripristino dei pacchetti vale per tutti i progetti:
+         diciamo che il launcher conosce anche queste piattaforme, e che il suo exe resta comunque in
+         bin\<Configuration>\net48 (senza sottocartella), dove il nucleo lo va a prendere. -->
+    <RuntimeIdentifiers>win-x64;win-x86</RuntimeIdentifiers>
+    <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Per compilare per .NET Framework senza installare niente: le "reference assemblies" da NuGet. -->
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3" PrivateAssets="all" />
+  </ItemGroup>
+
+</Project>

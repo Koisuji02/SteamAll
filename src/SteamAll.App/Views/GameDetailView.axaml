@@ -1,0 +1,135 @@
+<!--
+  GameDetailView.axaml
+  La pagina di dettaglio di un gioco, sopra la libreria: in alto l'hero con il logo (come in Steam),
+  poi nome, provenienza e spunta, poi le immagini. Un clic su un'immagine apre, sopra, la finestra
+  con le alternative di SteamGridDB.
+-->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:SteamAll.ViewModels"
+             x:Class="SteamAll.Views.GameDetailView"
+             x:DataType="vm:GameDetailViewModel">
+
+    <Panel>
+        <Border Background="#101318">
+            <DockPanel Margin="30,20,30,20">
+                <Button DockPanel.Dock="Top" Content="← Back" Command="{Binding CloseCommand}" HorizontalAlignment="Left" Margin="0,0,0,14" />
+                <ScrollViewer>
+                    <StackPanel Spacing="20">
+
+                        <!-- L'hero a tutta larghezza, con il logo in basso a sinistra (o il nome, se il logo non c'è). -->
+                        <Border Height="300" CornerRadius="14" ClipToBounds="True" Background="#1B1F25">
+                            <Panel>
+                                <Image Source="{Binding Hero.Image}" Stretch="UniformToFill" />
+                                <!-- Una sfumatura scura in basso, perché logo e nome si leggano sempre. -->
+                                <Border>
+                                    <Border.Background>
+                                        <LinearGradientBrush StartPoint="0%,40%" EndPoint="0%,100%">
+                                            <GradientStop Offset="0" Color="#00000000" />
+                                            <GradientStop Offset="1" Color="#CC000000" />
+                                        </LinearGradientBrush>
+                                    </Border.Background>
+                                </Border>
+                                <Image Source="{Binding Logo.Image}" MaxWidth="380" MaxHeight="130" Margin="28"
+                                       HorizontalAlignment="Left" VerticalAlignment="Bottom" IsVisible="{Binding Logo.HasImage}" />
+                                <TextBlock Text="{Binding Name}" FontSize="34" FontWeight="Bold" Margin="28" TextWrapping="Wrap"
+                                           HorizontalAlignment="Left" VerticalAlignment="Bottom" IsVisible="{Binding !Logo.HasImage}" />
+                            </Panel>
+                        </Border>
+
+                        <!-- Nome, provenienza (icona dello store), stato e spunta. -->
+                        <Grid ColumnDefinitions="Auto,*,Auto">
+                            <Border Classes="icontile" Classes.light="{Binding HasStoreIcon}" Margin="0,0,14,0" VerticalAlignment="Center">
+                                <Panel>
+                                    <Image Source="{Binding StoreIcon}" Width="30" Height="30" IsVisible="{Binding HasStoreIcon}" />
+                                    <PathIcon Data="{Binding SourceGlyph}" Width="22" Height="22" IsVisible="{Binding HasNoStoreIcon}" />
+                                </Panel>
+                            </Border>
+                            <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+                                <TextBlock Text="{Binding Name}" FontSize="24" FontWeight="Bold" TextWrapping="Wrap" />
+                                <StackPanel Orientation="Horizontal" Spacing="10">
+                                    <TextBlock Text="{Binding SourceText}" Classes="hint" VerticalAlignment="Center" />
+                                    <TextBlock Text="·" Classes="hint" VerticalAlignment="Center" />
+                                    <TextBlock Text="{Binding KindText}" Classes="hint" VerticalAlignment="Center" />
+                                    <Border Background="{Binding StatusBrush}" CornerRadius="4" Padding="7,2" VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding StatusText}" FontSize="12" Foreground="White" />
+                                    </Border>
+                                </StackPanel>
+                            </StackPanel>
+                            <CheckBox Grid.Column="2" Content="In Steam" IsChecked="{Binding IsChecked}" IsEnabled="{Binding CanToggle}" VerticalAlignment="Center" />
+                        </Grid>
+
+                        <!-- Le immagini: un clic per sceglierne un'altra su SteamGridDB. -->
+                        <StackPanel Spacing="8">
+                            <TextBlock Classes="section" Text="Artwork" />
+                            <TextBlock Classes="hint" Text="Click an image to choose another one from SteamGridDB." />
+                            <ItemsControl ItemsSource="{Binding Slots}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <WrapPanel />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate x:DataType="vm:ArtworkSlotViewModel">
+                                        <Button Classes="tile" Command="{Binding ChooseCommand}" ToolTip.Tip="{Binding Hint}">
+                                            <StackPanel Spacing="4">
+                                                <Border Width="{Binding Width}" Height="{Binding Height}" CornerRadius="8" ClipToBounds="True" Background="#22272F">
+                                                    <Panel>
+                                                        <TextBlock Text="No image yet" Classes="hint" FontSize="12" HorizontalAlignment="Center"
+                                                                   VerticalAlignment="Center" IsVisible="{Binding !HasImage}" />
+                                                        <Image Source="{Binding Image}" Stretch="Uniform" />
+                                                    </Panel>
+                                                </Border>
+                                                <TextBlock Text="{Binding Label}" FontWeight="Bold" />
+                                                <TextBlock Text="{Binding Hint}" Classes="hint" FontSize="12" TextWrapping="Wrap" MaxWidth="{Binding Width}" />
+                                            </StackPanel>
+                                        </Button>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                    </StackPanel>
+                </ScrollViewer>
+            </DockPanel>
+        </Border>
+
+        <!-- Le alternative di SteamGridDB per l'immagine scelta. -->
+        <Border Background="#C8000000" IsVisible="{Binding PickerOpen}">
+            <Border Classes="dialog" Margin="50" MaxWidth="1100" VerticalAlignment="Stretch">
+                <DockPanel>
+                    <TextBlock DockPanel.Dock="Top" Text="{Binding PickerTitle}" FontSize="22" FontWeight="Bold" Margin="0,0,0,10" />
+                    <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" Spacing="10" HorizontalAlignment="Right" Margin="0,14,0,0">
+                        <Button Content="Use automatic" Command="{Binding ResetCommand}"
+                                ToolTip.Tip="Forget your choice: SteamAll picks the image by itself" />
+                        <Button Content="Close" Command="{Binding ClosePickerCommand}" />
+                    </StackPanel>
+                    <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Spacing="10" Margin="0,0,0,8">
+                        <ProgressBar IsIndeterminate="True" Width="100" IsVisible="{Binding PickerBusy}" />
+                        <TextBlock Text="{Binding PickerMessage}" Classes="hint" TextWrapping="Wrap" />
+                    </StackPanel>
+                    <ScrollViewer>
+                        <ItemsControl ItemsSource="{Binding PickerItems}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="vm:ImageChoiceViewModel">
+                                    <Button Classes="tile" Command="{Binding ChooseCommand}">
+                                        <StackPanel Spacing="2">
+                                            <Border Width="{Binding Width}" Height="{Binding Height}" CornerRadius="6" ClipToBounds="True" Background="#22272F">
+                                                <Image Source="{Binding Thumb}" Stretch="Uniform" />
+                                            </Border>
+                                            <TextBlock Text="{Binding SizeText}" Classes="hint" FontSize="11" />
+                                        </StackPanel>
+                                    </Button>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </DockPanel>
+            </Border>
+        </Border>
+    </Panel>
+</UserControl>

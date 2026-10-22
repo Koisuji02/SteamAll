@@ -1,0 +1,126 @@
+<!--
+  SourcesView.axaml
+  La pagina "Games & emulators": le cartelle dei giochi, gli emulatori installati con le loro
+  cartelle di ROM, e il registro dell'ultima lettura.
+-->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:SteamAll.ViewModels"
+             xmlns:games="using:SteamAll.Core.Games"
+             x:Class="SteamAll.Views.SourcesView"
+             x:DataType="vm:SourcesViewModel">
+
+    <ScrollViewer>
+        <StackPanel Spacing="20" MaxWidth="980" HorizontalAlignment="Left">
+
+            <!-- Una "scheda" per le cartelle: Border con lo sfondo e gli angoli arrotondati (stile "card"). -->
+            <Border Classes="card">
+                <StackPanel Spacing="10">
+                    <TextBlock Classes="section" Text="Game folders" />
+                    <TextBlock Classes="hint" TextWrapping="Wrap"
+                               Text="One subfolder per game: a portable emulator with its game inside (Ryujinx, Cemu, Dolphin, RPCS3), or a PC game. Each is recognised automatically." />
+                    <ItemsControl ItemsSource="{Binding Folders}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="vm:SourceItemViewModel">
+                                <Grid ColumnDefinitions="Auto,*,Auto" Margin="0,4">
+                                    <CheckBox Grid.Column="0" IsChecked="{Binding IsEnabled}" VerticalAlignment="Center" />
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding Name}" FontWeight="SemiBold" />
+                                        <TextBlock Classes="hint" Text="{Binding Summary}" />
+                                    </StackPanel>
+                                    <Button Grid.Column="2" Content="Remove" Command="{Binding RemoveCommand}"
+                                            ToolTip.Tip="Stop scanning this folder (nothing is deleted)" />
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                    <!-- Click="AddFolder_Click": il clic chiama un metodo nel file .axaml.cs (serve la finestra del sistema per scegliere la cartella). -->
+                    <Button Content="Add folder..." Click="AddFolder_Click" />
+                </StackPanel>
+            </Border>
+
+            <Border Classes="card">
+                <StackPanel Spacing="12">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <TextBlock Classes="section" Text="Installed emulators" VerticalAlignment="Center" />
+                        <Button Grid.Column="1" Content="Add emulator" Command="{Binding AddEmulatorCommand}" />
+                    </Grid>
+                    <TextBlock Classes="hint" TextWrapping="Wrap"
+                               Text="An emulator installed on this computer and one or more ROM folders: each emulator takes only the games of its system, even if all your ROMs are in the same folder." />
+                    <TextBlock Classes="hint" FontStyle="Italic" Text="No installed emulators yet." IsVisible="{Binding HasNoEmulators}" />
+
+                    <ItemsControl ItemsSource="{Binding Emulators}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="vm:EmulatorSetupViewModel">
+                                <!-- Una scheda più scura per ogni emulatore. -->
+                                <Border Classes="inner" Margin="0,0,0,12">
+                                    <StackPanel Spacing="10">
+                                        <Grid ColumnDefinitions="Auto,*,Auto,Auto">
+                                            <ComboBox Grid.Column="0" Width="260" ItemsSource="{Binding Emulators}" SelectedItem="{Binding SelectedEmulator}">
+                                                <ComboBox.ItemTemplate>
+                                                    <DataTemplate x:DataType="games:Emulator">
+                                                        <TextBlock Text="{Binding Name}" />
+                                                    </DataTemplate>
+                                                </ComboBox.ItemTemplate>
+                                            </ComboBox>
+                                            <TextBlock Grid.Column="1" Classes="hint" Text="{Binding Summary}" VerticalAlignment="Center"
+                                                       Margin="14,0" TextWrapping="Wrap" />
+                                            <ToggleSwitch Grid.Column="2" IsChecked="{Binding Enabled}" OnContent="Used" OffContent="Off" Margin="0,0,12,0" />
+                                            <Button Grid.Column="3" Content="Remove" Command="{Binding RemoveCommand}"
+                                                    ToolTip.Tip="Forget this emulator (nothing is deleted from your disk)" />
+                                        </Grid>
+
+                                        <Grid ColumnDefinitions="110,*,Auto">
+                                            <TextBlock Text="Program" VerticalAlignment="Center" Classes="hint" />
+                                            <TextBlock Grid.Column="1" Text="{Binding ExePath}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                                            <Button Grid.Column="2" Content="Browse..." Click="BrowseExe_Click" />
+                                        </Grid>
+
+                                        <Grid ColumnDefinitions="110,*">
+                                            <TextBlock Text="ROM folders" Classes="hint" Margin="0,6,0,0" />
+                                            <StackPanel Grid.Column="1" Spacing="4">
+                                                <ItemsControl ItemsSource="{Binding RomFolders}">
+                                                    <ItemsControl.ItemTemplate>
+                                                        <DataTemplate x:DataType="vm:RomFolderItem">
+                                                            <Grid ColumnDefinitions="*,Auto" Margin="0,2">
+                                                                <TextBlock Text="{Binding Path}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                                                                <Button Grid.Column="1" Content="Remove" Command="{Binding RemoveCommand}" />
+                                                            </Grid>
+                                                        </DataTemplate>
+                                                    </ItemsControl.ItemTemplate>
+                                                </ItemsControl>
+                                                <Button Content="Add ROM folder..." Click="AddRomFolder_Click" />
+                                                <TextBlock Classes="hint" FontSize="12" Text="{Binding Takes}" TextWrapping="Wrap" />
+                                            </StackPanel>
+                                        </Grid>
+
+                                        <Grid ColumnDefinitions="110,*">
+                                            <TextBlock Text="Arguments" VerticalAlignment="Center" Classes="hint" />
+                                            <!-- Vuoto = i parametri consigliati, che si vedono in grigio (PlaceholderText). -->
+                                            <TextBox Grid.Column="1" Text="{Binding Arguments}" PlaceholderText="{Binding ArgumentsHint}"
+                                                     ToolTip.Tip="How the emulator starts a game: {rom} is the game file. Leave empty for the recommended ones." />
+                                        </Grid>
+                                    </StackPanel>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </Border>
+
+            <Border Classes="card">
+                <StackPanel Spacing="6">
+                    <TextBlock Classes="section" Text="Activity" />
+                    <ItemsControl ItemsSource="{Binding Log}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="x:String">
+                                <TextBlock Classes="hint" Text="{Binding}" TextWrapping="Wrap" />
+                                <!-- {Binding} senza nome = l'elemento stesso (qui un testo). -->
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

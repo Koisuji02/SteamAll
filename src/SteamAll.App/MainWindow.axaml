@@ -1,0 +1,181 @@
+<!--
+  MainWindow.axaml
+  La finestra principale: il menu a sinistra, la pagina scelta al centro, una barra in basso con
+  i pulsanti Refresh e Apply to Steam; e, sopra tutto, quando servono, la finestra di benvenuto
+  (primo avvio) e quella di conferma (Dialog).
+
+   ┌──────────┬───────────────────────────────────────┐
+   │ ◎ SteamAll│  Titolo della pagina                  │
+   │ ▦ Library│  ...                                   │
+   │ ◫ Stores │  (la pagina scelta)                    │
+   │ ▭ Games &│                                        │
+   │ ◉ Contr. │                                        │
+   │ ★ Recomm.│                                        │
+   │ ≡ Settin.│                                        │
+   ├──────────┴───────────────────────────────────────┤
+   │                              [Refresh] [Apply to Steam] │
+   └──────────────────────────────────────────────────┘
+-->
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:SteamAll.ViewModels"
+        xmlns:views="using:SteamAll.Views"
+        x:Class="SteamAll.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Title="SteamAll" Icon="/Assets/steamall.ico"
+        Width="1280" Height="800" MinWidth="880" MinHeight="520"
+        WindowStartupLocation="CenterScreen">
+
+    <!-- I "DataTemplates" dicono come mostrare un oggetto di un certo tipo: quando CurrentPage è un
+         LibraryViewModel, al centro compare un LibraryView, e così via. -->
+    <Window.DataTemplates>
+        <DataTemplate DataType="vm:LibraryViewModel"><views:LibraryView /></DataTemplate>
+        <DataTemplate DataType="vm:StoresViewModel"><views:StoresView /></DataTemplate>
+        <DataTemplate DataType="vm:SourcesViewModel"><views:SourcesView /></DataTemplate>
+        <DataTemplate DataType="vm:ControllersViewModel"><views:ControllersView /></DataTemplate>
+        <DataTemplate DataType="vm:RecommendedViewModel"><views:RecommendedView /></DataTemplate>
+        <DataTemplate DataType="vm:SettingsViewModel"><views:SettingsView /></DataTemplate>
+        <DataTemplate DataType="vm:GameDetailViewModel"><views:GameDetailView /></DataTemplate>
+    </Window.DataTemplates>
+
+    <!-- Panel sovrappone i figli: prima tutta la finestra, poi (sopra) benvenuto e conferma. -->
+    <Panel>
+        <!-- Una griglia: 2 colonne (menu 230 pixel, pagina il resto) e 2 righe (contenuto, barra in basso). -->
+        <Grid ColumnDefinitions="230,*" RowDefinitions="*,Auto">
+
+            <!-- Il menu a sinistra, con l'icona e il nome in alto. -->
+            <Border Grid.Column="0" Grid.Row="0" Classes="sidebar">
+                <DockPanel>
+                    <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Spacing="12" Margin="20,22,16,22">
+                        <Image Source="/Assets/steamall.png" Width="40" Height="40" />
+                        <StackPanel VerticalAlignment="Center">
+                            <TextBlock Text="SteamAll" FontSize="22" FontWeight="Bold" />
+                            <TextBlock Text="Every game, in Steam" Classes="hint" FontSize="12" />
+                        </StackPanel>
+                    </StackPanel>
+                    <ListBox Classes="nav" ItemsSource="{Binding Pages}" SelectedItem="{Binding CurrentPage}">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate x:DataType="vm:PageViewModel">
+                                <StackPanel Orientation="Horizontal" Spacing="12">
+                                    <!-- PathIcon disegna una forma (Data) con il colore del testo. -->
+                                    <PathIcon Data="{Binding Icon}" Width="18" Height="18" />
+                                    <TextBlock Text="{Binding Title}" VerticalAlignment="Center" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </DockPanel>
+            </Border>
+
+            <!-- La pagina: titolo, spiegazione e contenuto (scelto dai DataTemplates qui sopra). -->
+            <DockPanel Grid.Column="1" Grid.Row="0" Margin="30,24,30,12">
+                <StackPanel DockPanel.Dock="Top" Margin="0,0,0,18" Spacing="2">
+                    <TextBlock Text="{Binding CurrentPage.Title}" FontSize="28" FontWeight="Bold" />
+                    <TextBlock Text="{Binding CurrentPage.Subtitle}" Classes="hint" TextWrapping="Wrap" />
+                </StackPanel>
+                <ContentControl Content="{Binding CurrentPage}" />
+            </DockPanel>
+
+            <!-- La pagina di dettaglio di un gioco, sopra la pagina (il menu e la barra in basso restano). -->
+            <ContentControl Grid.Column="1" Grid.Row="0" Content="{Binding Detail}" IsVisible="{Binding HasDetail}" />
+
+            <!-- La barra in basso, su tutte e due le colonne (ColumnSpan="2"): solo i pulsanti, e la
+                 barra animata mentre SteamAll legge. -->
+            <Border Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="1" Classes="bottombar">
+                <StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Right">
+                    <ProgressBar IsIndeterminate="True" Width="80" IsVisible="{Binding IsBusy}" VerticalAlignment="Center" />
+                    <Button Content="Refresh" Command="{Binding RefreshCommand}" ToolTip.Tip="Read Steam and every source again" />
+                    <Button Classes="accent" Content="Apply to Steam" Command="{Binding ApplyCommand}"
+                            ToolTip.Tip="Add, update and remove games in Steam as shown in the library" />
+                </StackPanel>
+            </Border>
+        </Grid>
+
+        <!-- Il benvenuto del primo avvio: come vuoi usare SteamAll. -->
+        <Border Background="#C8000000" IsVisible="{Binding Welcome.IsOpen}">
+            <Border Classes="dialog" Width="760" VerticalAlignment="Center" HorizontalAlignment="Center">
+                <Panel>
+                    <!-- Passo 1: la scelta. -->
+                    <StackPanel Spacing="16" IsVisible="{Binding Welcome.IsChoosing}">
+                        <StackPanel Orientation="Horizontal" Spacing="14">
+                            <Image Source="/Assets/steamall.png" Width="48" Height="48" />
+                            <StackPanel VerticalAlignment="Center">
+                                <TextBlock Text="Welcome to SteamAll" FontSize="24" FontWeight="Bold" />
+                                <TextBlock Classes="hint" Text="How do you want to use it? You can change this later in Settings." />
+                            </StackPanel>
+                        </StackPanel>
+                        <UniformGrid Columns="2">
+                            <Button Classes="choice" Margin="0,0,8,0" Command="{Binding Welcome.ChooseInstalledCommand}">
+                                <StackPanel Spacing="8">
+                                    <TextBlock Text="Installed games only" FontSize="18" FontWeight="Bold" />
+                                    <TextBlock Classes="hint" TextWrapping="Wrap"
+                                               Text="Your installed store games, game folders and emulators in Steam. Nothing else to install." />
+                                </StackPanel>
+                            </Button>
+                            <Button Classes="choice accentchoice" Margin="8,0,0,0" Command="{Binding Welcome.ChooseAllCommand}">
+                                <StackPanel Spacing="8">
+                                    <TextBlock Text="Your whole library" FontSize="18" FontWeight="Bold" />
+                                    <TextBlock Classes="hint" TextWrapping="Wrap"
+                                               Text="Also the games you own but haven't installed, with an Install button that opens their store: Steam becomes your one game launcher." />
+                                </StackPanel>
+                            </Button>
+                        </UniformGrid>
+                        <StackPanel Orientation="Horizontal" Spacing="4">
+                            <TextBlock Classes="hint" FontSize="13" VerticalAlignment="Center" Text="Installed games only? BoilR does that well too:" />
+                            <HyperlinkButton Content="BoilR on GitHub" NavigateUri="https://github.com/PhilipK/BoilR" FontSize="13" />
+                        </StackPanel>
+                    </StackPanel>
+
+                    <!-- Passo 2: Millennium e il plugin del tasto Installa. -->
+                    <StackPanel Spacing="16" IsVisible="{Binding Welcome.IsSettingUp}">
+                        <TextBlock Text="Set up the Install button" FontSize="24" FontWeight="Bold" />
+                        <TextBlock Classes="hint" TextWrapping="Wrap"
+                                   Text="Steam shows the games you haven't installed as 'Install' only with Millennium and SteamAll's small plugin." />
+                        <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto" >
+                            <StackPanel Grid.Row="0" Margin="0,0,0,14">
+                                <TextBlock Text="1. Millennium" FontSize="16" FontWeight="Bold" />
+                                <TextBlock Classes="hint" Text="Adds plugins and themes to Steam. Install it, then come back." />
+                            </StackPanel>
+                            <Button Grid.Row="0" Grid.Column="1" Width="150" Content="{Binding MillenniumButtonText}"
+                                    IsEnabled="{Binding !MillenniumInstalled}" Command="{Binding OpenMillenniumCommand}" VerticalAlignment="Center" />
+                            <StackPanel Grid.Row="1">
+                                <TextBlock Text="2. SteamAll's Install button" FontSize="16" FontWeight="Bold" />
+                                <TextBlock Classes="hint" Text="{Binding PluginStatus}" TextWrapping="Wrap" />
+                            </StackPanel>
+                            <Button Grid.Row="1" Grid.Column="1" Width="150" Classes="accent" Content="{Binding PluginButtonText}"
+                                    Command="{Binding InstallPluginCommand}" VerticalAlignment="Center" />
+                        </Grid>
+                        <Button HorizontalAlignment="Right" Content="Done" Command="{Binding Welcome.CloseCommand}" />
+                    </StackPanel>
+                </Panel>
+            </Border>
+        </Border>
+
+        <!-- La finestra di conferma, sopra tutto: uno sfondo scuro semitrasparente e una scheda al centro.
+             "Dialog.IsOpen" = la proprietà IsOpen dell'oggetto Dialog del ViewModel. -->
+        <Border Background="#B0000000" IsVisible="{Binding Dialog.IsOpen}">
+            <Border Classes="dialog" Width="640" MaxHeight="620" VerticalAlignment="Center" HorizontalAlignment="Center">
+                <DockPanel>
+                    <TextBlock DockPanel.Dock="Top" Text="{Binding Dialog.Title}" FontSize="22" FontWeight="Bold" Margin="0,0,0,12" />
+                    <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" Spacing="10" HorizontalAlignment="Right" Margin="0,16,0,0">
+                        <ProgressBar IsIndeterminate="True" Width="100" IsVisible="{Binding Dialog.IsBusy}" VerticalAlignment="Center" />
+                        <Button Classes="accent" Content="{Binding Dialog.PrimaryText}" Command="{Binding Dialog.PrimaryCommand}"
+                                IsVisible="{Binding Dialog.HasPrimary}" />
+                        <Button Content="{Binding Dialog.SecondaryText}" Command="{Binding Dialog.SecondaryCommand}" />
+                    </StackPanel>
+                    <TextBlock DockPanel.Dock="Top" Text="{Binding Dialog.Message}" TextWrapping="Wrap" Margin="0,0,0,10" />
+                    <!-- Le righe dell'avanzamento, con la barra di scorrimento se sono tante. -->
+                    <ScrollViewer>
+                        <ItemsControl ItemsSource="{Binding Dialog.Lines}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="x:String">
+                                    <TextBlock Text="{Binding}" Classes="hint" TextWrapping="Wrap" FontSize="13" />
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </DockPanel>
+            </Border>
+        </Border>
+    </Panel>
+</Window>

@@ -1,0 +1,12 @@
+# .gitattributes: come git tratta gli "a capo" dei file di testo.
+# text=auto: nel repository gli a capo sono quelli di Linux (LF); su Windows, quando git scrive i
+# file sul disco, li converte in quelli di Windows (CRLF). Così il progetto va bene su tutti e due.
+* text=auto
+
+# Gli script di Windows (.cmd) vogliono sempre gli a capo di Windows.
+*.cmd text eol=crlf
+
+# File binari: da non toccare mai.
+*.png binary
+*.ico binary
+*.exe binary

@@ -1,0 +1,52 @@
+<!--
+  SettingsView.axaml
+  La pagina "Settings": cosa aggiunge SteamAll (con il plugin del tasto Installa), account di Steam,
+  SteamGridDB, pulizia. Si salva da sola.
+-->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:SteamAll.ViewModels"
+             x:Class="SteamAll.Views.SettingsView"
+             x:DataType="vm:SettingsViewModel">
+
+    <ScrollViewer>
+        <StackPanel Spacing="20" MaxWidth="900" HorizontalAlignment="Left">
+
+            <Border Classes="card">
+                <StackPanel Spacing="10">
+                    <TextBlock Classes="section" Text="What SteamAll adds" />
+                    <!-- GroupName: i due RadioButton sono alternativi (se ne sceglie uno solo). -->
+                    <RadioButton GroupName="mode" IsChecked="{Binding IsInstalledOnly}" Content="Installed games only" />
+                    <RadioButton GroupName="mode" IsChecked="{Binding IsWholeLibrary}" Content="Your whole library: also the games you haven't installed, with an Install button" />
+                    <!-- Il plugin del tasto Installa (solo per la libreria completa). -->
+                    <Grid ColumnDefinitions="*,Auto,Auto" Margin="28,4,0,0" IsVisible="{Binding IsWholeLibrary}">
+                        <TextBlock Classes="hint" Text="{Binding Shell.PluginStatus}" TextWrapping="Wrap" VerticalAlignment="Center" />
+                        <Button Grid.Column="1" Classes="accent" Content="{Binding Shell.PluginButtonText}" Command="{Binding Shell.InstallPluginCommand}" Margin="10,0,0,0" />
+                        <Button Grid.Column="2" Content="Remove" Command="{Binding Shell.RemovePluginCommand}" Margin="10,0,0,0" />
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <Border Classes="card">
+                <StackPanel Spacing="10">
+                    <TextBlock Classes="section" Text="Steam account" />
+                    <ComboBox Width="360" ItemsSource="{Binding Accounts}" SelectedItem="{Binding SelectedAccount}" />
+                </StackPanel>
+            </Border>
+
+            <Border Classes="card">
+                <StackPanel Spacing="10">
+                    <TextBlock Classes="section" Text="SteamGridDB" />
+                    <StackPanel Orientation="Horizontal" Spacing="10">
+                        <!-- PasswordChar: mostra pallini al posto delle lettere. La chiave si salva cifrata. -->
+                        <TextBox Width="360" PasswordChar="●" PlaceholderText="API key (for covers, heroes, logos and icons)" Text="{Binding ApiKey}" />
+                        <HyperlinkButton Content="Get a key" NavigateUri="https://www.steamgriddb.com/profile/preferences/api"
+                                         VerticalAlignment="Center" />
+                    </StackPanel>
+                    <CheckBox IsChecked="{Binding HeroHd}" Content="HD heroes (3840x1240) when available" />
+                    <CheckBox IsChecked="{Binding Cleanup}" Content="Move leftover artwork of removed games to the Recycle Bin" />
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

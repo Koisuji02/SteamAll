@@ -1,0 +1,29 @@
+<!--
+  SteamAll.Tests.csproj
+  Le prove automatiche del nucleo, con xUnit (la libreria di prove più usata in .NET). Si lanciano tutte con "dotnet test": ognuna dice OK o spiega cosa non torna. Sono "ripetibili": stesso risultato ogni volta, senza toccare Steam né i file veri.
+-->
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- Con xUnit v3 il progetto delle prove è un piccolo programma a sé (Exe): "dotnet test" lo avvia e lui esegue le prove (il motore si sceglie in global.json) -->
+    <OutputType>Exe</OutputType>
+    <!-- Non è una libreria da pubblicare su NuGet. -->
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- xUnit: [Fact], [Theory], Assert... -->
+    <PackageReference Include="xunit.v3" Version="4.0.1" />
+  </ItemGroup>
+
+  <!-- Le prove usano il nucleo -->
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\SteamAll.Core\SteamAll.Core.csproj" />
+  </ItemGroup>
+
+  <!-- "using Xunit;" in tutti i file delle prove, senza scriverlo ogni volta -->
+  <ItemGroup>
+    <Using Include="Xunit" />
+  </ItemGroup>
+
+</Project>

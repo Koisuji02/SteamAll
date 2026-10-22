@@ -1,0 +1,70 @@
+[
+    {
+      "left_joycon_stick": {
+        "joystick": "Left",
+        "invert_stick_x": false,
+        "invert_stick_y": false,
+        "rotate90_cw": false,
+        "stick_button": "LeftStick"
+      },
+      "right_joycon_stick": {
+        "joystick": "Right",
+        "invert_stick_x": false,
+        "invert_stick_y": false,
+        "rotate90_cw": false,
+        "stick_button": "RightStick"
+      },
+      "deadzone_left": 0.1,
+      "deadzone_right": 0.1,
+      "range_left": 1,
+      "range_right": 1,
+      "trigger_threshold": 0.5,
+      "motion": {
+        "motion_backend": "GamepadDriver",
+        "sensitivity": 100,
+        "gyro_deadzone": 1,
+        "enable_motion": true
+      },
+      "rumble": {
+        "strong_rumble": 1,
+        "weak_rumble": 1,
+        "enable_rumble": false,
+        "use_hdrumble": false
+      },
+      "led": {
+        "enable_led": false,
+        "turn_off_led": false,
+        "use_rainbow": false,
+        "led_color": 0
+      },
+      "left_joycon": {
+        "button_minus": "Back",
+        "button_l": "LeftShoulder",
+        "button_zl": "LeftTrigger",
+        "button_sl": "SingleLeftTrigger0",
+        "button_sr": "SingleRightTrigger0",
+        "dpad_up": "DpadUp",
+        "dpad_down": "DpadDown",
+        "dpad_left": "DpadLeft",
+        "dpad_right": "DpadRight"
+      },
+      "right_joycon": {
+        "button_plus": "Start",
+        "button_r": "RightShoulder",
+        "button_zr": "RightTrigger",
+        "button_sl": "SingleLeftTrigger1",
+        "button_sr": "SingleRightTrigger1",
+        "button_x": "X",
+        "button_b": "B",
+        "button_y": "Y",
+        "button_a": "A"
+      },
+      "version": 1,
+      "backend": "GamepadSDL3",
+      "id": "0-00000003-28de-0000-ff11-000000007801",
+      "name": "Steam Virtual Gamepad",
+      "controller_type": "ProController",
+      "player_index": "Player1",
+      "enable_dynamic_gamepad_swap": false
+    }
+  ]

@@ -1,0 +1,59 @@
+<!--
+  RecommendedView.axaml
+  La pagina "Recommended": due schede, Millennium e il tema, ognuna con l'icona grande, due righe
+  e il pulsante a destra (che diventa "Installed" e spento quando è già fatto). Il margine a sinistra del pulsante tiene staccato il testo lungo.
+-->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:SteamAll.ViewModels"
+             x:Class="SteamAll.Views.RecommendedView"
+             x:DataType="vm:RecommendedViewModel">
+
+    <ScrollViewer>
+        <StackPanel Spacing="16" MaxWidth="820" HorizontalAlignment="Left">
+
+            <!-- Millennium. -->
+            <Border Classes="card">
+                <Grid ColumnDefinitions="Auto,*,Auto">
+                    <Border Classes="icontile big light" Margin="0,0,20,0">
+                        <Panel>
+                            <TextBlock Text="M" FontSize="34" FontWeight="Bold" Foreground="#1B1F25" HorizontalAlignment="Center"
+                                       VerticalAlignment="Center" IsVisible="{Binding !HasMillenniumLogo}" />
+                            <!-- Il logo vettoriale di Millennium: le sue forme sono scritte "capovolte", ScaleY=-1 le raddrizza. -->
+                            <Path Data="{Binding MillenniumLogo}" Fill="#1B1F25" Stretch="Uniform" Width="58" Height="58"
+                                  IsVisible="{Binding HasMillenniumLogo}" RenderTransform="scale(1,-1)" />
+                        </Panel>
+                    </Border>
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="4">
+                        <TextBlock Text="Millennium" FontSize="20" FontWeight="Bold" />
+                        <TextBlock Classes="hint" TextWrapping="Wrap"
+                                   Text="Themes and plugins for Steam. SteamAll's Install button and its theme need it." />
+                    </StackPanel>
+                    <Button Grid.Column="2" Classes="accent" Width="150" Margin="20,0,0,0" HorizontalContentAlignment="Center" VerticalAlignment="Center"
+                            Content="{Binding MillenniumButtonText}" Command="{Binding OpenMillenniumCommand}" IsEnabled="{Binding !MillenniumInstalled}" />
+                </Grid>
+            </Border>
+
+            <!-- Il tema, con i crediti al tema originale. -->
+            <Border Classes="card">
+                <Grid ColumnDefinitions="Auto,*,Auto">
+                    <!-- L'icona del tema: la stessa famiglia di quella di SteamAll (Steam in nero e rosso), con il pennello. -->
+                    <Image Source="/Assets/theme.png" Width="96" Height="96" Margin="0,0,20,0" />
+
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="4">
+                        <TextBlock Text="Steam 2.0 Modular (Windows Accent)" FontSize="20" FontWeight="Bold" TextWrapping="Wrap" />
+                        <TextBlock Classes="hint" TextWrapping="Wrap"
+                                   Text="A clean, minimal Steam that follows your Windows accent colour, with full-window game artwork." />
+                        <StackPanel Orientation="Horizontal" Spacing="2">
+                            <TextBlock Classes="hint" FontSize="13" VerticalAlignment="Center" Text="A modification of" />
+                            <HyperlinkButton Content="Steam 2.0 Modular by Von-Amadeus" NavigateUri="{Binding OriginalThemeUri}" FontSize="13" Padding="4,0" />
+                            <TextBlock Classes="hint" FontSize="13" VerticalAlignment="Center" Text="— all credit for the original design goes to its author." />
+                        </StackPanel>
+                    </StackPanel>
+                    <Button Grid.Column="2" Classes="accent" Width="150" Margin="20,0,0,0" HorizontalContentAlignment="Center" VerticalAlignment="Center"
+                            Content="{Binding ThemeButtonText}" Command="{Binding InstallThemeCommand}" />
+                </Grid>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

@@ -1,0 +1,8 @@
+{
+  "$schema": "https://raw.githubusercontent.com/SteamClientHomebrew/Millennium/main/src/sys/plugin-schema.json",
+  "name": "steamall-install-button",
+  "common_name": "SteamAll Install Button",
+  "description": "Shows the store games added by SteamAll as not installed, with an Install button that opens their store.",
+  "version": "1.0.0",
+  "backendType": "lua"
+}

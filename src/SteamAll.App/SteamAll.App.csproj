@@ -1,0 +1,38 @@
+<!--
+  SteamAll.App.csproj
+  Il programma con le finestre (Avalonia). Diventa SteamAll.exe e usa il nucleo (SteamAll.Core).
+-->
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- WinExe = programma con finestre: su Windows non apre la console nera accanto. -->
+    <OutputType>WinExe</OutputType>
+    <!-- Il nome dell'exe: SteamAll.exe (senza, sarebbe SteamAll.App.exe). -->
+    <AssemblyName>SteamAll</AssemblyName>
+    <!-- Il namespace delle classi di questo progetto: SteamAll (così la classe App è SteamAll.App). -->
+    <RootNamespace>SteamAll</RootNamespace>
+    <!-- Il manifest per Windows (vedi app.manifest). Su Linux viene ignorato. -->
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <!-- L'icona dell'exe (Esplora file, barra delle applicazioni). -->
+    <ApplicationIcon>Assets\steamall.ico</ApplicationIcon>
+  </PropertyGroup>
+
+  <!-- I "pacchetti NuGet": librerie scaricate da nuget.org alla prima compilazione ("restore").
+       Avalonia è divisa in pezzi; usiamo la stessa versione per tutti. -->
+  <ItemGroup>
+    <PackageReference Include="Avalonia" Version="12.1.3" />                 <!-- il motore dell'interfaccia -->
+    <PackageReference Include="Avalonia.Desktop" Version="12.1.3" />         <!-- finestre su Windows, Linux, macOS -->
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="12.1.3" />   <!-- lo stile grafico "Fluent" (come Windows 11) -->
+  </ItemGroup>
+
+  <!-- Le risorse dell'interfaccia (icona, font Figtree), dentro l'exe: si usano con "avares://SteamAll/Assets/...". -->
+  <ItemGroup>
+    <AvaloniaResource Include="Assets\**" />
+  </ItemGroup>
+
+  <!-- Un "riferimento a progetto": l'app usa le classi del nucleo, che viene compilato prima. -->
+  <ItemGroup>
+    <ProjectReference Include="..\SteamAll.Core\SteamAll.Core.csproj" />
+  </ItemGroup>
+
+</Project>

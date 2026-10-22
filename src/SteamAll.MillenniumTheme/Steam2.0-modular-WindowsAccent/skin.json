@@ -1,0 +1,19 @@
+{
+  "name": "Steam 2.0 modular (Windows Accent)",
+  "author": "Von-Amadeus (colori dal tema di Windows: modifica locale)",
+  "description": "Copia locale di Steam 2.0 Modular: i gradienti di sfondo seguono il colore principale di Windows (variabili --SystemAccentColor di Millennium) e si aggiornano da soli quando Windows cambia colore, per esempio con la presentazione di sfondi. Resta tutto il resto del tema: lista giochi nascondibile, ordinamento manuale, personalizzazione dei colori.",
+  "header_image": "https://i.imgur.com/sCCMnkG.png",
+  "splash_image": "https://i.imgur.com/sCCMnkG.png",
+  "tags": [
+    "Elegant",
+    "Modern",
+    "Minimalist",
+    "Modular",
+    "Clean UI",
+    "GOG 2.0 Inspired",
+    "Windows Accent"
+  ],
+  "version": "1.0.4-windowsaccent.1",
+  "Steam-WebKit": "webkit.css",
+  "UseDefaultPatches": true
+}

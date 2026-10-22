@@ -1,0 +1,54 @@
+<!--
+  StoresView.axaml
+  La pagina "Stores": schede quadrate, una accanto all'altra (WrapPanel va a capo da solo).
+
+     ┌──────────────┐
+     │   [ icona ]  │
+     │  GOG GALAXY  │
+     │ [ Installed ]│   <- "Install" (apre il sito) se lo store non c'è
+     │  ( ●) Used   │
+     └──────────────┘
+-->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:SteamAll.ViewModels"
+             x:Class="SteamAll.Views.StoresView"
+             x:DataType="vm:StoresViewModel">
+
+    <ScrollViewer>
+        <StackPanel Spacing="16">
+            <TextBlock Classes="hint" IsVisible="{Binding HasNoStores}" TextWrapping="Wrap"
+                       Text="No stores are supported on this system yet. SteamAll is open source: new stores are welcome." />
+
+            <ItemsControl ItemsSource="{Binding Stores}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="vm:StoreItemViewModel">
+                        <Border Classes="card" Width="220" Height="270" Margin="0,0,16,16" ToolTip.Tip="{Binding Tooltip}">
+                            <StackPanel Spacing="14" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                <!-- L'icona su un fondo chiaro, o le iniziali su un fondo scuro se l'icona non c'è.
+                                     Classes.light="{Binding HasIcon}": la classe c'è solo con l'icona. -->
+                                <Border Classes="icontile big" Classes.light="{Binding HasIcon}" HorizontalAlignment="Center">
+                                    <Panel>
+                                        <TextBlock Text="{Binding Initials}" FontWeight="Bold" FontSize="30" Foreground="#9AA6B8"
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center" IsVisible="{Binding !HasIcon}" />
+                                        <Image Source="{Binding Icon}" Width="72" Height="72" IsVisible="{Binding HasIcon}" />
+                                    </Panel>
+                                </Border>
+                                <TextBlock Text="{Binding Name}" FontSize="17" FontWeight="Bold" HorizontalAlignment="Center" />
+                                <Button Content="{Binding InstallText}" Command="{Binding InstallCommand}" Width="140"
+                                        HorizontalAlignment="Center" HorizontalContentAlignment="Center" />
+                                <ToggleSwitch IsChecked="{Binding IsEnabled}" IsEnabled="{Binding IsInstalled}"
+                                              OnContent="Used" OffContent="Not used" HorizontalAlignment="Center" />
+                            </StackPanel>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

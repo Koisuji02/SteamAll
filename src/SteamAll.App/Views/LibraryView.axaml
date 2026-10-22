@@ -1,0 +1,91 @@
+<!--
+  LibraryView.axaml
+  La pagina "Library": filtri e ricerca in alto, poi la griglia delle copertine.
+  x:DataType dice ad Avalonia di che tipo è il DataContext (qui LibraryViewModel): così i
+  {Binding ...} vengono controllati quando si compila ("compiled bindings"), e un nome sbagliato
+  è un errore subito, non un campo vuoto quando apri il programma.
+-->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:SteamAll.ViewModels"
+             x:Class="SteamAll.Views.LibraryView"
+             x:DataType="vm:LibraryViewModel">
+    <!-- xmlns:vm="using:..." = un prefisso per usare le nostre classi nel XAML: vm:LibraryViewModel. -->
+
+    <!-- DockPanel: i figli si "attaccano" ai bordi (DockPanel.Dock); l'ultimo riempie lo spazio rimasto. -->
+    <DockPanel>
+
+        <!-- Riga in alto: filtri a sinistra, ricerca e pulsanti a destra. -->
+        <Grid DockPanel.Dock="Top" ColumnDefinitions="*,Auto" Margin="0,0,0,12">
+            <!-- ColumnDefinitions="*,Auto": la prima colonna prende lo spazio libero, la seconda quanto serve. -->
+            <ListBox Grid.Column="0" Classes="chips"
+                     ItemsSource="{Binding Filters}" SelectedItem="{Binding SelectedFilter}">
+                <ListBox.ItemsPanel>
+                    <!-- Le voci una accanto all'altra, andando a capo se non ci stanno. -->
+                    <ItemsPanelTemplate>
+                        <WrapPanel />
+                    </ItemsPanelTemplate>
+                </ListBox.ItemsPanel>
+                <ListBox.ItemTemplate>
+                    <DataTemplate x:DataType="vm:LibraryFilter">
+                        <TextBlock Text="{Binding Label}" />
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+
+            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" VerticalAlignment="Top">
+                <TextBox Width="220" PlaceholderText="Search games" Text="{Binding Search}" />
+                <Button Content="Select all" Command="{Binding SelectAllCommand}"
+                        ToolTip.Tip="Tick every game shown (with a filter: only those)" />
+                <Button Content="Select none" Command="{Binding SelectNoneCommand}"
+                        ToolTip.Tip="Untick every game shown (with a filter: only those)" />
+            </StackPanel>
+        </Grid>
+
+        <!-- La griglia. ScrollViewer aggiunge la barra di scorrimento quando le copertine non ci stanno. -->
+        <ScrollViewer>
+            <ItemsControl ItemsSource="{Binding Tiles}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+
+                <!-- Com'è fatta UNA piastrella: Avalonia la ripete per ogni gioco della lista. -->
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="vm:GameTileViewModel">
+                        <!-- Tutta la piastrella è un pulsante: un clic apre la pagina di dettaglio del gioco.
+                             La casella in alto a sinistra cambia solo la spunta (è "sopra" il pulsante e prende lei il clic). -->
+                        <Button Classes="tile" Command="{Binding OpenCommand}"
+                                Opacity="{Binding Opacity}" ToolTip.Tip="{Binding Tooltip}">
+                            <StackPanel Width="150" Spacing="4">
+                                <!-- La copertina: 150x225 (2:3), angoli arrotondati (ClipToBounds taglia l'immagine sui bordi). -->
+                                <Border Width="150" Height="225" CornerRadius="8" ClipToBounds="True" Background="#2B2F36">
+                                    <Panel>
+                                        <!-- Panel sovrappone i figli: iniziali, poi l'immagine sopra, poi spunta e stato. -->
+                                        <TextBlock Text="{Binding Initials}" FontSize="36" FontWeight="SemiBold"
+                                                   Foreground="#8A94A6" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                        <Image Source="{Binding Cover}" Stretch="UniformToFill" />
+                                        <!-- Un fondo scuro tondo dietro la casella, perché si veda su ogni copertina. -->
+                                        <Border Background="#99000000" CornerRadius="6" Margin="6" Padding="4,0,0,0"
+                                                HorizontalAlignment="Left" VerticalAlignment="Top">
+                                            <CheckBox IsChecked="{Binding IsChecked}" IsEnabled="{Binding CanToggle}" MinWidth="0" />
+                                        </Border>
+                                        <Border Background="{Binding StatusBrush}" CornerRadius="4" Padding="6,2"
+                                                Margin="6" HorizontalAlignment="Left" VerticalAlignment="Bottom">
+                                            <TextBlock Text="{Binding StatusText}" FontSize="11" Foreground="White" />
+                                        </Border>
+                                    </Panel>
+                                </Border>
+                                <TextBlock Text="{Binding Name}" FontWeight="SemiBold" TextWrapping="Wrap"
+                                           MaxLines="2" TextTrimming="CharacterEllipsis" />
+                                <TextBlock Text="{Binding Detail}" FontSize="12" Opacity="0.65"
+                                           TextTrimming="CharacterEllipsis" />
+                            </StackPanel>
+                        </Button>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+    </DockPanel>
+</UserControl>

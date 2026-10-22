@@ -1,0 +1,78 @@
+# release.yml — GitHub Actions: prova, compila e pubblica SteamAll per Windows, Linux e macOS.
+# Parte da solo quando su GitHub arriva un "tag" che inizia con v (es. git tag v1.0.0, poi
+# git push --tags), oppure a mano dalla scheda Actions. Con un tag crea anche la Release con i file.
+#
+# Tre "job": prima le prove (su Windows, dove girano anche quelle del launcher vero), poi la
+# compilazione per ogni sistema, ognuna sul suo sistema ("matrix"): macOS deve stare su un Mac
+# perché Apple vuole i programmi firmati, e la firma (anche quella "ad hoc", gratuita) si fa lì.
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      # .NET: la versione scritta in global.json (la stessa che usi tu).
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+      # Node.js per le prove del plugin Millennium.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Test
+        run: dotnet test -c Release
+
+  publish:
+    needs: test
+    strategy:
+      matrix:
+        include:
+          - os: windows-latest
+            rid: win-x64
+            file: SteamAll.exe
+            asset: SteamAll-windows-x64.exe
+          - os: ubuntu-latest
+            rid: linux-x64
+            file: SteamAll
+            asset: SteamAll-linux-x64
+          - os: macos-latest
+            rid: osx-arm64
+            file: SteamAll
+            asset: SteamAll-macos-arm64
+    runs-on: ${{ matrix.os }}
+    permissions:
+      contents: write   # serve per creare la Release
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      - name: Publish
+        run: >
+          dotnet publish src/SteamAll.App -c Release -r ${{ matrix.rid }} --self-contained true -o publish
+          -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true
+          -p:EnableCompressionInSingleFile=true -p:DebugType=none
+
+      # Un nome per sistema, così nella Release stanno tutti e tre insieme.
+      - name: Name the file
+        shell: pwsh
+        run: Move-Item "publish/${{ matrix.file }}" "publish/${{ matrix.asset }}"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.asset }}
+          path: publish/${{ matrix.asset }}
+
+      - name: Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: publish/${{ matrix.asset }}
+          generate_release_notes: true

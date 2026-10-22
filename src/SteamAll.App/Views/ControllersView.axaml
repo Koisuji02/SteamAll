@@ -1,0 +1,89 @@
+<!--
+  ControllersView.axaml
+  La pagina "Controllers": il controller disegnato (in un Viewbox, che lo ingrandisce o rimpicciolisce
+  per farlo stare nella pagina), il suo nome, lo stato di Steam Input e il pulsante Auto-set.
+  Il disegno è fatto di forme semplici su un Canvas di 560 x 360: ogni tasto ha la classe "btn",
+  e la classe "on" (il colore principale) quando è premuto: Classes.on="{Binding South}".
+-->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:SteamAll.ViewModels"
+             x:Class="SteamAll.Views.ControllersView"
+             x:DataType="vm:ControllersViewModel">
+
+    <!-- ":is(Shape)" = qualunque forma (Ellipse, Rectangle...): "Shape" da solo varrebbe solo per quel tipo esatto. -->
+    <UserControl.Styles>
+        <Style Selector=":is(Shape).btn">
+            <Setter Property="Fill" Value="#3A424E" />
+        </Style>
+        <Style Selector=":is(Shape).btn.on">
+            <Setter Property="Fill" Value="{DynamicResource SystemControlHighlightAccentBrush}" />
+        </Style>
+        <Style Selector=":is(Shape).ring">
+            <Setter Property="Stroke" Value="#46505E" />
+            <Setter Property="StrokeThickness" Value="3" />
+        </Style>
+    </UserControl.Styles>
+
+    <ScrollViewer>
+        <StackPanel Spacing="18" MaxWidth="760" HorizontalAlignment="Center">
+
+            <Viewbox MaxHeight="380" Opacity="{Binding PadOpacity}">
+                <Canvas Width="560" Height="360">
+                    <!-- I grilletti: il binario e il riempimento. -->
+                    <Rectangle Canvas.Left="118" Canvas.Top="8" Width="96" Height="14" RadiusX="7" RadiusY="7" Fill="#2A3039" />
+                    <Rectangle Canvas.Left="118" Canvas.Top="8" Width="{Binding LeftTriggerWidth}" Height="14" RadiusX="7" RadiusY="7" IsVisible="{Binding LeftTriggerOn}"
+                               Fill="{DynamicResource SystemControlHighlightAccentBrush}" />
+                    <Rectangle Canvas.Left="346" Canvas.Top="8" Width="96" Height="14" RadiusX="7" RadiusY="7" Fill="#2A3039" />
+                    <Rectangle Canvas.Left="346" Canvas.Top="8" Width="{Binding RightTriggerWidth}" Height="14" RadiusX="7" RadiusY="7" IsVisible="{Binding RightTriggerOn}"
+                               Fill="{DynamicResource SystemControlHighlightAccentBrush}" />
+                    <!-- I dorsali. -->
+                    <Rectangle Classes="btn" Classes.on="{Binding LeftBumper}" Canvas.Left="106" Canvas.Top="36" Width="120" Height="24" RadiusX="12" RadiusY="12" />
+                    <Rectangle Classes="btn" Classes.on="{Binding RightBumper}" Canvas.Left="334" Canvas.Top="36" Width="120" Height="24" RadiusX="12" RadiusY="12" />
+                    <!-- Il corpo, con le due impugnature. -->
+                    <Path Fill="#1F242C" Stroke="#3A424E" StrokeThickness="3"
+                          Data="M160,70 H400 C460,70 492,100 510,160 L545,275 C560,330 520,358 482,333 L412,285 H148 L78,333 C40,358 0,330 15,275 L50,160 C68,100 100,70 160,70 Z" />
+                    <!-- La levetta sinistra: l'anello e la parte che si muove. -->
+                    <Ellipse Classes="ring" Canvas.Left="137" Canvas.Top="112" Width="76" Height="76" />
+                    <Ellipse Classes="btn" Classes.on="{Binding LeftStick}" Canvas.Left="{Binding LeftThumbX}" Canvas.Top="{Binding LeftThumbY}" Width="48" Height="48" />
+                    <!-- La croce direzionale. -->
+                    <Rectangle Classes="btn" Classes.on="{Binding Up}" Canvas.Left="200" Canvas.Top="196" Width="22" Height="24" RadiusX="4" RadiusY="4" />
+                    <Rectangle Classes="btn" Classes.on="{Binding Down}" Canvas.Left="200" Canvas.Top="242" Width="22" Height="24" RadiusX="4" RadiusY="4" />
+                    <Rectangle Classes="btn" Classes.on="{Binding Left}" Canvas.Left="176" Canvas.Top="220" Width="24" Height="22" RadiusX="4" RadiusY="4" />
+                    <Rectangle Classes="btn" Classes.on="{Binding Right}" Canvas.Left="222" Canvas.Top="220" Width="24" Height="22" RadiusX="4" RadiusY="4" />
+                    <!-- Back, Guide (il tasto centrale) e Start. -->
+                    <Rectangle Classes="btn" Classes.on="{Binding Back}" Canvas.Left="236" Canvas.Top="142" Width="26" Height="14" RadiusX="7" RadiusY="7" />
+                    <Ellipse Classes="btn" Classes.on="{Binding Guide}" Canvas.Left="266" Canvas.Top="94" Width="28" Height="28" />
+                    <Rectangle Classes="btn" Classes.on="{Binding Start}" Canvas.Left="298" Canvas.Top="142" Width="26" Height="14" RadiusX="7" RadiusY="7" />
+                    <!-- I quattro tasti frontali, per posizione (in alto, a sinistra, a destra, in basso). -->
+                    <Ellipse Classes="btn" Classes.on="{Binding North}" Canvas.Left="371" Canvas.Top="102" Width="30" Height="30" />
+                    <Ellipse Classes="btn" Classes.on="{Binding West}" Canvas.Left="339" Canvas.Top="134" Width="30" Height="30" />
+                    <Ellipse Classes="btn" Classes.on="{Binding East}" Canvas.Left="403" Canvas.Top="134" Width="30" Height="30" />
+                    <Ellipse Classes="btn" Classes.on="{Binding South}" Canvas.Left="371" Canvas.Top="166" Width="30" Height="30" />
+                    <!-- La levetta destra. -->
+                    <Ellipse Classes="ring" Canvas.Left="320" Canvas.Top="193" Width="70" Height="70" />
+                    <Ellipse Classes="btn" Classes.on="{Binding RightStick}" Canvas.Left="{Binding RightThumbX}" Canvas.Top="{Binding RightThumbY}" Width="44" Height="44" />
+                </Canvas>
+            </Viewbox>
+
+            <StackPanel Spacing="4" HorizontalAlignment="Center">
+                <TextBlock Text="{Binding ControllerTitle}" FontSize="20" FontWeight="Bold" HorizontalAlignment="Center" />
+                <TextBlock Text="{Binding ControllerHint}" Classes="hint" HorizontalAlignment="Center" />
+                <TextBlock Text="{Binding SteamInputText}" TextWrapping="Wrap" TextAlignment="Center" Margin="0,6,0,0" />
+            </StackPanel>
+
+            <Button Classes="accent" Content="Auto-set" Command="{Binding AutoSetCommand}" HorizontalAlignment="Center"
+                    Padding="36,10" FontSize="16"
+                    ToolTip.Tip="Auto-set your controller for all your games, emulators included, through Steam Input: no manual setup needed." />
+
+            <!-- Solo se ci sono problemi: due tasti frontali sullo stesso tasto nei layout di Steam Input. -->
+            <ItemsControl ItemsSource="{Binding LayoutWarnings}" IsVisible="{Binding HasLayoutWarnings}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="x:String">
+                        <TextBlock Text="{Binding}" Foreground="#E0A040" TextWrapping="Wrap" TextAlignment="Center" />
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

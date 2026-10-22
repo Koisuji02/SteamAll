@@ -1,0 +1,61 @@
+<!--
+  SteamAll.Core.csproj
+  Il nucleo del programma: tutto quello che NON è interfaccia (lettura di Steam e degli store,
+  il piano, la scrittura in Steam, i launcher, i controller). Diventa una "libreria"
+  (SteamAll.Core.dll) che usano sia l'app con le finestre sia le prove.
+
+  "Sdk=Microsoft.NET.Sdk" = un progetto .NET normale. Le impostazioni comuni (versione di .NET,
+  Nullable...) arrivano da Directory.Build.props. I file .cs della cartella (e delle
+  sottocartelle) vengono inclusi da soli: non bisogna elencarli.
+-->
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Le classi "internal" sono visibili solo dentro il nucleo... e anche nel progetto delle prove,
+       che così può provare i pezzi interni (es. la lettura del catalogo di Epic con dati finti). -->
+  <ItemGroup>
+    <InternalsVisibleTo Include="SteamAll.Tests" />
+  </ItemGroup>
+
+  <!-- Pacchetti NuGet del nucleo. ProtectedData (di Microsoft) cifra la chiave API con il tuo
+       account Windows (DPAPI); su Linux non si usa. -->
+  <ItemGroup>
+    <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="10.0.12" />
+  </ItemGroup>
+
+  <!-- Il cambio del controller e le impostazioni del launcher sono gli STESSI file del launcher:
+       "Link" li fa comparire qui senza copiarli, così nucleo e launcher non possono divergere. -->
+  <ItemGroup>
+    <Compile Include="..\SteamAll.Launcher\ControllerSwitch.cs" Link="Launchers\ControllerSwitch.cs" />
+    <Compile Include="..\SteamAll.Launcher\LauncherConfig.cs" Link="Launchers\LauncherConfig.cs" />
+  </ItemGroup>
+
+  <!-- Il launcher compilato viaggia DENTRO il nucleo come "risorsa incorporata" (EmbeddedResource):
+       così SteamAll è un exe solo, e copia il launcher nelle cartelle dei giochi quando serve.
+       Il riferimento al progetto non usa le sue classi (ReferenceOutputAssembly="false"): serve
+       solo a compilare prima il launcher. GlobalPropertiesToRemove: le opzioni di "publish" per l'exe
+       finale (Windows 64 bit, .NET incluso) non valgono per il launcher, che è .NET Framework. -->
+  <ItemGroup>
+    <ProjectReference Include="..\SteamAll.Launcher\SteamAll.Launcher.csproj"
+                      ReferenceOutputAssembly="false" SkipGetTargetFrameworkProperties="true"
+                      GlobalPropertiesToRemove="RuntimeIdentifier;SelfContained;PublishSingleFile;IncludeNativeLibrariesForSelfExtract;EnableCompressionInSingleFile" />
+    <EmbeddedResource Include="..\SteamAll.Launcher\bin\$(Configuration)\net48\SteamAll.Launcher.exe"
+                      LogicalName="SteamAll.Launcher.exe" Visible="false" />
+  </ItemGroup>
+
+  <!-- I profili "Steam" dei controller (per il controller virtuale di Steam), uno per emulatore:
+       anche loro dentro il nucleo. %(RecursiveDir) = la sottocartella del file (es. "RPCS3\global\"). -->
+  <ItemGroup>
+    <EmbeddedResource Include="Controllers\SteamProfiles\**\*" LogicalName="SteamProfiles\%(RecursiveDir)%(Filename)%(Extension)" />
+  </ItemGroup>
+
+  <!-- Il plugin Millennium del tasto Installa (src\SteamAll.MillenniumPlugin), anche lui dentro il nucleo. -->
+  <ItemGroup>
+    <EmbeddedResource Include="..\SteamAll.MillenniumPlugin\**\*" LogicalName="MillenniumPlugin\%(RecursiveDir)%(Filename)%(Extension)" Visible="false" />
+  </ItemGroup>
+
+  <!-- Il tema consigliato (src\SteamAll.MillenniumTheme), installato da SteamAll con un pulsante. -->
+  <ItemGroup>
+    <EmbeddedResource Include="..\SteamAll.MillenniumTheme\**\*" LogicalName="MillenniumTheme\%(RecursiveDir)%(Filename)%(Extension)" Visible="false" />
+  </ItemGroup>
+
+</Project>

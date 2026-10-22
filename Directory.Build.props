@@ -1,0 +1,23 @@
+<!--
+  Directory.Build.props
+  Impostazioni comuni a TUTTI i progetti che stanno in questa cartella o sotto (Core, App, Tests).
+  MSBuild, il sistema di compilazione di .NET, legge questo file da solo prima di ogni .csproj: così le scriviamo una volta sola invece di ripeterle in tre file.
+-->
+<Project>
+  <PropertyGroup>
+    <!-- La versione di .NET: 10, supportata da Microsoft fino a novembre 2028 (versione "LTS"). -->
+    <TargetFramework>net10.0</TargetFramework>
+
+    <!-- "Nullable": il compilatore controlla i valori null. Un tipo "string" non può essere null;
+         se una variabile può esserlo si scrive "string?" e il compilatore ci obbliga a controllare
+         prima di usarla. Evita il classico errore "riferimento a un oggetto non impostato". -->
+    <Nullable>enable</Nullable>
+
+    <!-- "ImplicitUsings": gli "using" più comuni (System, System.IO, System.Collections.Generic,
+         System.Linq, System.Threading.Tasks...) sono già inclusi in ogni file, senza scriverli. -->
+    <ImplicitUsings>enable</ImplicitUsings>
+
+    <!-- La versione del programma, che finisce nelle proprietà dell'exe. -->
+    <Version>0.1.0</Version>
+  </PropertyGroup>
+</Project>

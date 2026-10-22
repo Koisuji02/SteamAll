@@ -1,0 +1,20 @@
+# Create dalla compilazione: si rigenerano ogni volta con "dotnet build"
+bin/
+obj/
+
+# Impostazioni personali degli editor (Visual Studio), diverse su ogni PC
+.vs/
+*.user
+
+# Risultati delle prove e cartelle di pubblicazione
+TestResults/
+publish/
+
+# File di lavoro interni (note, appunti, script di prova con percorsi del PC): solo in locale
+CLAUDE.md
+docs/HANDOFF.md
+docs/FUNZIONI-SCRIPT.md
+docs/PUBLISH-THEME.md
+docs/memoria/
+reference/
+.claude/

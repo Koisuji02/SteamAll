@@ -1,0 +1,28 @@
+# ci.yml — GitHub Actions: le prove a ogni pull request e a ogni modifica di main.
+# Il job si chiama "test": è il controllo che la protezione di main chiede verde prima di unire una PR.
+# Gira su Windows, dove funzionano anche le prove del launcher vero (con una copia di cmd.exe).
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      # .NET: la versione scritta in global.json.
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+      # Node.js per le prove del plugin Millennium.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      # -warnaserror: una PR con avvisi del compilatore non passa.
+      - name: Build
+        run: dotnet build -c Release -warnaserror
+      - name: Test
+        run: dotnet test -c Release --no-build

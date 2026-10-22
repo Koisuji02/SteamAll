@@ -1,0 +1,143 @@
+<!--
+  App.axaml
+  L'applicazione, descritta in XAML: un linguaggio XML per le interfacce. Ogni tag crea un oggetto
+  e gli attributi ne impostano le proprietà. Il codice che va con questo file sta in App.axaml.cs.
+
+  Qui ci sono anche gli STILI comuni a tutte le finestre, come in un foglio CSS: uno stile ha un
+  "Selector" (a quali controlli si applica) e dei "Setter" (quali proprietà cambia).
+  Per esempio Selector="Border.card" = i Border con Classes="card".
+-->
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="SteamAll.App"
+             RequestedThemeVariant="Dark">
+    <!-- RequestedThemeVariant="Dark": tema scuro, come Steam. "Default" seguirebbe Windows. -->
+
+    <Application.Styles>
+        <!-- Lo stile di base di tutti i controlli: Fluent, quello di Windows 11.
+             Accent = il colore degli accenti (pulsanti principali, voce scelta nel menu, interruttori,
+             caselle, link). Di base Fluent prende quello di Windows: qui è il rosso del logo, così
+             l'app ha un colore solo. Le sfumature più chiare e più scure le calcola Fluent da questo. -->
+        <FluentTheme>
+            <FluentTheme.Palettes>
+                <ColorPaletteResources x:Key="Dark" Accent="#E01E2B" />
+            </FluentTheme.Palettes>
+        </FluentTheme>
+
+        <!-- Menu a sinistra: uno sfondo appena più chiaro della pagina. -->
+        <Style Selector="Border.sidebar">
+            <Setter Property="Background" Value="#1B1F25" />
+        </Style>
+
+        <!-- Le voci del menu: più alte e con un po' di spazio. -->
+        <Style Selector="ListBox.nav">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Margin" Value="10,0" />
+        </Style>
+        <Style Selector="ListBox.nav ListBoxItem">
+            <Setter Property="Padding" Value="14,10" />
+            <Setter Property="CornerRadius" Value="6" />
+            <Setter Property="Margin" Value="0,2" />
+            <Setter Property="FontSize" Value="15" />
+        </Style>
+
+        <!-- I filtri della libreria a forma di "pillola". -->
+        <Style Selector="ListBox.chips">
+            <Setter Property="Background" Value="Transparent" />
+        </Style>
+        <Style Selector="ListBox.chips ListBoxItem">
+            <Setter Property="Padding" Value="12,5" />
+            <Setter Property="Margin" Value="0,0,6,6" />
+            <Setter Property="CornerRadius" Value="14" />
+            <Setter Property="Background" Value="#262B33" />
+        </Style>
+
+        <!-- Le schede ("card") delle pagine Sources, Settings, Controllers. -->
+        <Style Selector="Border.card">
+            <Setter Property="Background" Value="#1B1F25" />
+            <Setter Property="CornerRadius" Value="10" />
+            <Setter Property="Padding" Value="18" />
+        </Style>
+
+        <!-- Una scheda dentro una scheda (gli emulatori installati): un po' più scura. -->
+        <Style Selector="Border.inner">
+            <Setter Property="Background" Value="#14181D" />
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="Padding" Value="14" />
+        </Style>
+
+        <!-- Il quadrato dell'icona di uno store: scuro con le iniziali, chiaro con l'icona vera. -->
+        <Style Selector="Border.icontile">
+            <Setter Property="Width" Value="44" />
+            <Setter Property="Height" Value="44" />
+            <Setter Property="CornerRadius" Value="10" />
+            <Setter Property="Background" Value="#2B313A" />
+        </Style>
+        <Style Selector="Border.icontile.light">
+            <Setter Property="Background" Value="#E9EBEE" />
+        </Style>
+        <!-- La versione grande, per le schede degli store e di Recommended. -->
+        <Style Selector="Border.icontile.big">
+            <Setter Property="Width" Value="96" />
+            <Setter Property="Height" Value="96" />
+            <Setter Property="CornerRadius" Value="22" />
+        </Style>
+
+        <!-- Le due scelte del benvenuto: pulsanti grandi come schede. -->
+        <Style Selector="Button.choice">
+            <Setter Property="Padding" Value="20" />
+            <Setter Property="CornerRadius" Value="12" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="VerticalAlignment" Value="Stretch" />
+            <Setter Property="HorizontalContentAlignment" Value="Left" />
+            <Setter Property="VerticalContentAlignment" Value="Top" />
+            <Setter Property="Background" Value="#2A3039" />
+        </Style>
+        <Style Selector="Button.accentchoice">
+            <Setter Property="BorderBrush" Value="{DynamicResource SystemControlHighlightAccentBrush}" />
+            <Setter Property="BorderThickness" Value="2" />
+        </Style>
+
+        <!-- Titoli di sezione e testi di spiegazione. -->
+        <Style Selector="TextBlock.section">
+            <Setter Property="FontSize" Value="17" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+        </Style>
+        <Style Selector="TextBlock.hint">
+            <Setter Property="Opacity" Value="0.65" />
+        </Style>
+
+        <!-- L'intestazione delle tabelle (pagina Controllers): testo più piccolo e chiaro. -->
+        <Style Selector="Grid.tablehead TextBlock">
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="Opacity" Value="0.6" />
+        </Style>
+
+        <!-- La scheda della finestra di conferma. -->
+        <Style Selector="Border.dialog">
+            <Setter Property="Background" Value="#20252C" />
+            <Setter Property="CornerRadius" Value="12" />
+            <Setter Property="Padding" Value="26" />
+            <Setter Property="BoxShadow" Value="0 12 40 0 #80000000" />
+        </Style>
+
+        <!-- La barra in basso. -->
+        <Style Selector="Border.bottombar">
+            <Setter Property="Background" Value="#14171C" />
+            <Setter Property="Padding" Value="20,12" />
+        </Style>
+
+        <!-- Le piastrelle della griglia: pulsanti "piatti", che si illuminano sotto il mouse.
+             "/template/ ContentPresenter" = una parte interna del pulsante, quella che disegna lo sfondo. -->
+        <Style Selector="Button.tile">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Padding" Value="8" />
+            <Setter Property="Margin" Value="0,0,8,12" />
+            <Setter Property="CornerRadius" Value="10" />
+            <Setter Property="VerticalAlignment" Value="Top" />
+        </Style>
+        <Style Selector="Button.tile:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="#262B33" />
+        </Style>
+    </Application.Styles>
+</Application>
