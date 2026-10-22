@@ -2,6 +2,9 @@
   <Folder Name="/src/">
     <Project Path="src/SteamAll.App/SteamAll.App.csproj" />
     <Project Path="src/SteamAll.Core/SteamAll.Core.csproj" />
+    <!-- Il launcher deve stare nella soluzione: se manca, compilando la soluzione in Release viene
+         compilato in Debug (configurazione predefinita) e il nucleo non trova il suo exe in bin\Release. -->
+    <Project Path="src/SteamAll.Launcher/SteamAll.Launcher.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/SteamAll.Tests/SteamAll.Tests.csproj" />
